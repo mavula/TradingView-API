@@ -11,6 +11,7 @@ if (!process.env.SESSION || !process.env.SIGNATURE) {
 const client = new TradingView.Client({
   token: process.env.SESSION,
   signature: process.env.SIGNATURE,
+  DEBGU: true
 });
 
 const chart = new client.Session.Chart();

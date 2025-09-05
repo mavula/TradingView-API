@@ -142,6 +142,16 @@ module.exports = (client) => class ChartSession {
   }
 
   /**
+   * Footprint study listeners
+   * @type {StudyListeners}
+   */
+  #footprints = {};
+  /** @return {StudyListeners} Footprint study listeners */
+  get footprints() {
+    return Object.values(this.#footprints).sort((a, b) => b.id - a.id);
+  }
+
+  /**
    * Current market infos
    * @type {MarketInfos}
    */
@@ -201,10 +211,12 @@ module.exports = (client) => class ChartSession {
           return;
         }
 
+        console.log("CHART PACKET:", packet);
         if (['timescale_update', 'du'].includes(packet.type)) {
           const changes = [];
 
           Object.keys(packet.data[1]).forEach((k) => {
+            console.log("CHART UPDATE KEY:", k);
             changes.push(k);
             if (k === '$prices') {
               const periods = packet.data[1].$prices;
@@ -221,8 +233,22 @@ module.exports = (client) => class ChartSession {
                   volume: Math.round(p.v[5] * 100) / 100,
                 };
               });
-
               return;
+            }
+
+            // FOOTPRINT
+            if (k.startsWith('st_') && JSON.stringify(packet.data[1][k]).includes("footprint")) 
+            {
+              const periods = packet.data[1][k]?.["ns"];
+              if (!periods || !periods.d) return;
+
+              const data = JSON.parse(periods.d);
+              const cards = data.graphicsCmds.create.footprints;
+              if (!cards) return;
+
+              cards[0]['data'].forEach((card) => {
+                this.#footprints[card.id] = card;
+              });
             }
 
             if (this.#studyListeners[k]) this.#studyListeners[k](packet);

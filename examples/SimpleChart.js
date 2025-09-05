@@ -8,7 +8,7 @@ const client = new TradingView.Client(); // Creates a websocket client
 
 const chart = new client.Session.Chart(); // Init a Chart session
 
-chart.setMarket('BINANCE:BTCEUR', { // Set the market
+chart.setMarket('COMEX_DL:GC1!', { // Set the market
   timeframe: 'D',
 });
 
