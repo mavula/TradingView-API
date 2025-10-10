@@ -176,9 +176,8 @@ module.exports = class Client {
           type: packet.m,
           data: packet.p,
         };
-
+        //console.log(packet.p);
         const session = packet.p[0];
-
         if (session && this.#sessions[session]) {
           this.#sessions[session].onData(parsed);
           return;
@@ -189,7 +188,6 @@ module.exports = class Client {
         this.#handleEvent('logged', packet);
         return;
       }
-
       this.#handleEvent('data', packet);
     });
   }
