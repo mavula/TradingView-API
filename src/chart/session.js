@@ -211,12 +211,10 @@ module.exports = (client) => class ChartSession {
           return;
         }
 
-        if (global.TW_DEBUG) { console.log("CHART PACKET:", packet); }
         if (['timescale_update', 'du'].includes(packet.type)) {
           const changes = [];
 
           Object.keys(packet.data[1]).forEach((k) => {
-            if (global.TW_DEBUG) { console.log("CHART UPDATE KEY:", k); }
             changes.push(k);
             if (k === '$prices') {
               const periods = packet.data[1].$prices;
